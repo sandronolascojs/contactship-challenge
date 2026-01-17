@@ -100,12 +100,17 @@ export class LeadsRepository {
       person: r.person,
     }));
 
-    const countBaseQuery = this.db.select().from(leads);
-    const allResults = whereClause ? await countBaseQuery.where(whereClause) : await countBaseQuery;
+    const [countResult] = await this.db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(leads)
+      .innerJoin(persons, eq(leads.personId, persons.id))
+      .where(whereClause || sql`1=1`);
+
+    const total = countResult?.count ?? 0;
 
     return {
       leads: leadsWithPerson,
-      total: allResults.length,
+      total,
     };
   }
 

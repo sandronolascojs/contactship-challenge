@@ -16,26 +16,6 @@ services:
     networks:
       - contactship-network
 
-  api:
-    build:
-      context: ..
-      dockerfile: services/api/Dockerfile
-    container_name: contactship-api
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    networks:
-      - contactship-network
-
 volumes:
   redis_data:
     driver: local

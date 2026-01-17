@@ -2,6 +2,8 @@ import type { InsertLead, SelectLead } from '@contactship/db/schema';
 import { LeadStatus } from '@contactship/types';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { buildLeadKey, CacheService, DEFAULT_CACHE_TTL } from '../cache';
+import type { PaginatedResponse } from '../common/interfaces/response.interface';
+import { createPaginationMeta } from '../common/utils/pagination.utils';
 import { PersonsService } from '../persons';
 import type { CreateLeadDto } from './dto';
 import { LeadsRepository, type FindLeadsOptions } from './repository';
@@ -45,8 +47,22 @@ export class LeadsService {
     );
   }
 
-  async findMany(options: FindLeadsOptions = {}) {
-    return this.leadsRepository.findMany(options);
+  async findMany(options: FindLeadsOptions = {}): Promise<PaginatedResponse<SelectLead>> {
+    const result = await this.leadsRepository.findMany(options);
+
+    const page = options.skip ? options.skip / (options.take || 10) + 1 : 1;
+    const take = options.take || 10;
+
+    const meta = createPaginationMeta({
+      total: result.total,
+      page,
+      take,
+    });
+
+    return {
+      data: result.leads,
+      meta,
+    };
   }
 
   async update(id: string, updateLeadDto: Partial<CreateLeadDto>): Promise<SelectLead> {

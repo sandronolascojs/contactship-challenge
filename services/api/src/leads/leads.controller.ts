@@ -26,14 +26,18 @@ export class LeadsController {
 
   @Get()
   async findAll(
-    @Query('skip') skip?: string,
+    @Query('page') page?: string,
     @Query('take') take?: string,
     @Query('status') status?: LeadStatus,
     @Query('search') search?: string,
   ) {
+    const pageNumber = page ? parseInt(page, 10) : 1;
+    const takeNumber = take ? parseInt(take, 10) : 10;
+    const skip = (pageNumber - 1) * takeNumber;
+
     const options: FindLeadsOptions = {
-      skip: skip ? parseInt(skip, 10) : undefined,
-      take: take ? parseInt(take, 10) : undefined,
+      skip,
+      take: takeNumber,
       status,
       search,
     };
