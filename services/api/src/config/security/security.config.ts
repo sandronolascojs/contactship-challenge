@@ -1,5 +1,5 @@
-import { ThrottlerOptions } from '@nestjs/throttler';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { ThrottlerOptions } from '@nestjs/throttler';
 
 const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
@@ -56,8 +56,7 @@ const _securityConfig = {
 export const SECURITY_CONFIG = _securityConfig satisfies SecurityConfigType;
 
 const _helmetConfig = {
-  contentSecurityPolicy:
-    process.env.NODE_ENV === 'production' ? undefined : false,
+  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? undefined : false,
   crossOriginEmbedderPolicy: false,
   hsts: {
     maxAge: 31536000,

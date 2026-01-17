@@ -8,12 +8,9 @@ export class PersonsService {
   constructor(private readonly personsRepository: PersonsRepository) {}
 
   async createFromLeadDto(dto: CreateLeadDto): Promise<SelectPerson> {
-    const fullName = `${dto.firstName} ${dto.lastName}`;
-
     const personData: InsertPerson = {
       firstName: dto.firstName,
       lastName: dto.lastName,
-      fullName,
     };
 
     if (dto.phone) personData.phone = dto.phone;

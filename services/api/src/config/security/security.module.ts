@@ -1,13 +1,13 @@
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { ThrottlerModule } from '@nestjs/throttler';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ThrottlerModule } from '@nestjs/throttler';
 import helmet from 'helmet';
-import { SecurityConfigService } from './security-config.service';
-import { ThrottlerConfigService } from './throttler-config.service';
-import { SecurityMiddleware } from './security.middleware';
 import { HttpExceptionFilter } from './http-exception.filter';
-import { TransformInterceptor } from './transform.interceptor';
 import { LoggingInterceptor } from './logging.interceptor';
+import { SecurityConfigService } from './security-config.service';
+import { SecurityMiddleware } from './security.middleware';
+import { ThrottlerConfigService } from './throttler-config.service';
+import { TransformInterceptor } from './transform.interceptor';
 
 @Module({
   imports: [
@@ -24,12 +24,7 @@ import { LoggingInterceptor } from './logging.interceptor';
     TransformInterceptor,
     LoggingInterceptor,
   ],
-  exports: [
-    SecurityConfigService,
-    HttpExceptionFilter,
-    TransformInterceptor,
-    LoggingInterceptor,
-  ],
+  exports: [SecurityConfigService, HttpExceptionFilter, TransformInterceptor, LoggingInterceptor],
 })
 export class SecurityModule implements NestModule {
   constructor(private readonly configService: SecurityConfigService) {}

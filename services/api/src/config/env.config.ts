@@ -5,9 +5,7 @@ const envSchema = z.object({
     .string()
     .default('3000')
     .transform((val) => parseInt(val, 10)),
-  NODE_ENV: z
-    .enum(['development', 'production', 'staging'])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'staging', 'test']).default('development'),
   DATABASE_URL: z.string().url(),
   ALLOWED_ORIGINS: z
     .string()
@@ -21,6 +19,7 @@ const envSchema = z.object({
     .string()
     .default('100')
     .transform((val) => parseInt(val, 10)),
+  OPENAI_API_KEY: z.string(),
 });
 
 type EnvSchema = z.infer<typeof envSchema>;
