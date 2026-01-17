@@ -1,0 +1,59 @@
+{
+  "name": "@contactship/db",
+  "version": "1.0.0",
+  "description": "Database for contactship project",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./schema": {
+      "import": "./dist/schema/index.js",
+      "require": "./dist/schema/index.js",
+      "types": "./dist/schema/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "coverage": "vitest run --coverage",
+    "db:generate": "dotenv -e ./.env.local -- drizzle-kit generate --config ./src/drizzle.config.ts",
+    "db:migrate": "dotenv -e ./.env.local -- drizzle-kit migrate --config ./src/drizzle.config.ts",
+    "db:migrate:local": "dotenv -e ./.env.local -- drizzle-kit migrate --config ./src/drizzle.config.ts",
+    "format": "prettier --config ../config/.prettierrc --ignore-path ../../.prettierignore --write . && prettier-package-json --write ./package.json",
+    "lint": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --ext .ts,.tsx",
+    "lint:fix": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --fix --ext .ts,.tsx",
+    "seed:local": "dotenv -e ./.env.local -- tsx src/seeds/index.ts",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@contactship/config": "workspace:*",
+    "@contactship/types": "workspace:*",
+    "@paralleldrive/cuid2": "catalog:",
+    "dotenv-cli": "catalog:",
+    "drizzle-orm": "catalog:",
+    "pg": "catalog:",
+    "tsx": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "catalog:",
+    "@types/pg": "catalog:",
+    "drizzle-kit": "catalog:",
+    "eslint": "catalog:",
+    "npm-run-all": "catalog:",
+    "prettier": "catalog:",
+    "prettier-package-json": "catalog:",
+    "prettier-plugin-organize-imports": "catalog:",
+    "tsup": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}
