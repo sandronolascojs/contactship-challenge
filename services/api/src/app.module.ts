@@ -2,12 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { DatabaseModule } from './database';
-import { LeadsModule } from './leads';
+import { CacheModule } from './cache';
 import { LoggerModule } from './common';
-import { SecurityModule } from './config/security';
-import { HealthModule } from './health';
 import { loadEnv } from './config/env.config';
+import { SecurityModule } from './config/security';
+import { DatabaseModule } from './database';
+import { HealthModule } from './health';
+import { LeadsModule } from './leads';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { loadEnv } from './config/env.config';
     LeadsModule,
     LoggerModule,
     HealthModule,
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

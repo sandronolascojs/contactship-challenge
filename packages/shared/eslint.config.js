@@ -1,5 +1,5 @@
 // @ts-check
-import base from '@contactshipip/config/eslint.base.js';
+import base from '@contactship/config/eslint.base.js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(...base, {

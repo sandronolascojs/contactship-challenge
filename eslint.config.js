@@ -1,7 +1,7 @@
 // @ts-check
 import js from '@eslint/js';
-import globals from 'globals';
 import unusedImports from 'eslint-plugin-unused-imports';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
@@ -37,6 +37,7 @@ export default tseslint.config(
       '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/no-extraneous-class': 'off',
       'unused-imports/no-unused-imports': 'warn',
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       '@typescript-eslint/no-misused-spread': 'off',

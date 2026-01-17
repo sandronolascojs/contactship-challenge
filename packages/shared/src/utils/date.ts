@@ -5,8 +5,6 @@
  * Provides consistent date formatting, calculations, and timezone handling
  */
 
-import { format, type Locale } from 'date-fns';
-import { enUS, es } from 'date-fns/locale';
 import {
   differenceInDays,
   differenceInHours,
@@ -14,11 +12,13 @@ import {
   differenceInMonths,
   differenceInWeeks,
   differenceInYears,
+  format,
   formatDistance as formatDistanceFns,
   startOfDay,
+  type Locale,
 } from 'date-fns';
 import { formatInTimeZone, fromZonedTime, toZonedTime } from 'date-fns-tz';
-import { Timezone } from '@contactship/types';
+import { enUS, es } from 'date-fns/locale';
 
 // ============================================================================
 // Types and Constants
@@ -237,10 +237,7 @@ export const calculateUsedPercentage = (
  * @param translations - Translation functions for time units
  * @returns Formatted time distance string (e.g., "5 minutes ago", "2 hours ago")
  */
-export function formatDistanceToNow(
-  date: Date,
-  translations: TimeDistanceTranslations,
-): string {
+export function formatDistanceToNow(date: Date, translations: TimeDistanceTranslations): string {
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -273,18 +270,45 @@ export function formatDistanceToNow(
   };
 
   const timeUnits: TimeUnitConfig[] = [
-    { condition: minutes < 60, value: minutes, singularFn: translations.minuteAgo, pluralFn: translations.minutesAgo },
-    { condition: hours < 24, value: hours, singularFn: translations.hourAgo, pluralFn: translations.hoursAgo },
-    { condition: days < 7, value: days, singularFn: translations.dayAgo, pluralFn: translations.daysAgo },
-    { condition: weeks < 4, value: weeks, singularFn: translations.weekAgo, pluralFn: translations.weeksAgo },
-    { condition: months < 12, value: months, singularFn: translations.monthAgo, pluralFn: translations.monthsAgo },
+    {
+      condition: minutes < 60,
+      value: minutes,
+      singularFn: translations.minuteAgo,
+      pluralFn: translations.minutesAgo,
+    },
+    {
+      condition: hours < 24,
+      value: hours,
+      singularFn: translations.hourAgo,
+      pluralFn: translations.hoursAgo,
+    },
+    {
+      condition: days < 7,
+      value: days,
+      singularFn: translations.dayAgo,
+      pluralFn: translations.daysAgo,
+    },
+    {
+      condition: weeks < 4,
+      value: weeks,
+      singularFn: translations.weekAgo,
+      pluralFn: translations.weeksAgo,
+    },
+    {
+      condition: months < 12,
+      value: months,
+      singularFn: translations.monthAgo,
+      pluralFn: translations.monthsAgo,
+    },
     defaultUnit,
   ];
 
   // Find the first matching time unit (always has a match due to defaultUnit)
   const matchedUnit = timeUnits.find((unit) => unit.condition) ?? defaultUnit;
-  
-  return matchedUnit.value === 1 ? matchedUnit.singularFn(matchedUnit.value) : matchedUnit.pluralFn(matchedUnit.value);
+
+  return matchedUnit.value === 1
+    ? matchedUnit.singularFn(matchedUnit.value)
+    : matchedUnit.pluralFn(matchedUnit.value);
 }
 
 /**
@@ -327,7 +351,7 @@ export function formatTime(date: Date, locale?: SupportedDateLocale): string {
  * @param timezone - User's timezone (IANA string)
  * @returns Date object representing start of day in the specified timezone (in UTC)
  */
-export function getStartOfDayInTimezone(date: Date, timezone: Timezone): Date {
+export function getStartOfDayInTimezone(date: Date, timezone: string): Date {
   // Convert UTC date to user's timezone
   const zonedDate = toZonedTime(date, timezone);
 
@@ -345,7 +369,7 @@ export function getStartOfDayInTimezone(date: Date, timezone: Timezone): Date {
  * @param timezone - User's timezone (IANA string)
  * @returns Date string in YYYY-MM-DD format in the specified timezone
  */
-export function getDateStringInTimezone(date: Date, timezone: Timezone): string {
+export function getDateStringInTimezone(date: Date, timezone: string): string {
   return formatInTimeZone(date, timezone, 'yyyy-MM-dd');
 }
 
@@ -357,7 +381,7 @@ export function getDateStringInTimezone(date: Date, timezone: Timezone): string 
  * @param timezone - Timezone to use for calculation (IANA string)
  * @returns Number of days difference
  */
-export function getDaysDifferenceInTimezone(date1: Date, date2: Date, timezone: Timezone): number {
+export function getDaysDifferenceInTimezone(date1: Date, date2: Date, timezone: string): number {
   // Convert both dates to user's timezone and get start of day
   const start1 = getStartOfDayInTimezone(date1, timezone);
   const start2 = getStartOfDayInTimezone(date2, timezone);

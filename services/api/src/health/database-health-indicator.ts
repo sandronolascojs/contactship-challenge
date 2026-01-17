@@ -1,39 +1,28 @@
 import { Injectable } from '@nestjs/common';
+import { HealthIndicatorResult } from '@nestjs/terminus';
 import { sql } from 'drizzle-orm';
 import { DrizzleService } from '../database/drizzle.service';
-
-interface HealthCheckResultType {
-  [key: string]: {
-    status: 'up' | 'down';
-    message?: string;
-  };
-}
 
 @Injectable()
 export class DatabaseHealthIndicator {
   constructor(private readonly drizzleService: DrizzleService) {}
 
-  async isHealthy(key: string) {
+  async isHealthy(key: string): Promise<HealthIndicatorResult> {
     try {
       await this.drizzleService.client.execute(sql`SELECT 1`);
-      const result: HealthCheckResultType = {
+      return {
         [key]: {
           status: 'up',
         },
       };
-      return result;
     } catch (error) {
       console.error(error);
-      const result: HealthCheckResultType = {
+      return {
         [key]: {
           status: 'down',
-          message:
-            error instanceof Error
-              ? error.message
-              : 'Database connection failed',
+          message: error instanceof Error ? error.message : 'Database connection failed',
         },
       };
-      return result;
     }
   }
 }

@@ -1,57 +1,41 @@
-import { CacheKeyPrefix, CacheKeyTag } from './cache-key.constants';
+import { CacheKeyPrefix } from './cache.constants';
 
 export class CacheKeyBuilder {
   private parts: string[] = [];
 
   private prefix: string | null = null;
 
-  private tags: Set<CacheKeyTag> = new Set();
-
-  withPrefix(prefix: CacheKeyPrefix | string): CacheKeyBuilder {
+  withPrefix(prefix: CacheKeyPrefix | string): this {
     this.prefix = prefix;
 
     return this;
   }
 
-  addPart(part: string | number): CacheKeyBuilder {
+  addPart(part: string | number): this {
     this.parts.push(String(part));
 
     return this;
   }
 
-  addParts(...parts: Array<string | number>): CacheKeyBuilder {
+  addParts(...parts: (string | number)[]): this {
     parts.forEach((part) => this.addPart(part));
 
     return this;
   }
 
-  withId(id: string | number): CacheKeyBuilder {
+  withId(id: string | number): this {
     this.parts.push('id');
     this.parts.push(String(id));
 
     return this;
   }
 
-  withQuery(query: Record<string, unknown>): CacheKeyBuilder {
+  withQuery(query: Record<string, unknown>): this {
     const sortedKeys = Object.keys(query).sort();
 
-    const queryParts = sortedKeys.map(
-      (key) => `${key}=${JSON.stringify(query[key])}`,
-    );
+    const queryParts = sortedKeys.map((key) => `${key}=${JSON.stringify(query[key])}`);
 
     this.parts.push('query', ...queryParts);
-
-    return this;
-  }
-
-  withTag(tag: CacheKeyTag): CacheKeyBuilder {
-    this.tags.add(tag);
-
-    return this;
-  }
-
-  withTags(...tags: CacheKeyTag[]): CacheKeyBuilder {
-    tags.forEach((tag) => this.tags.add(tag));
 
     return this;
   }
@@ -64,10 +48,6 @@ export class CacheKeyBuilder {
     }
 
     return parts.join(':');
-  }
-
-  getTags(): CacheKeyTag[] {
-    return Array.from(this.tags);
   }
 
   static create(prefix?: CacheKeyPrefix | string): CacheKeyBuilder {

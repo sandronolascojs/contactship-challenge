@@ -5,9 +5,7 @@ const envSchema = z.object({
     .string()
     .default('3000')
     .transform((val) => parseInt(val, 10)),
-  NODE_ENV: z
-    .enum(['development', 'production', 'staging'])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'production', 'staging']).default('development'),
   DATABASE_URL: z.string().url(),
   ALLOWED_ORIGINS: z
     .string()
@@ -20,6 +18,17 @@ const envSchema = z.object({
   RATE_LIMIT_MAX: z
     .string()
     .default('100')
+    .transform((val) => parseInt(val, 10)),
+  CACHE_STRATEGY: z.enum(['memory', 'redis']).default('memory'),
+  REDIS_HOST: z.string().default('localhost'),
+  REDIS_PORT: z
+    .string()
+    .default('6379')
+    .transform((val) => parseInt(val, 10)),
+  REDIS_PASSWORD: z.string().optional(),
+  REDIS_DB: z
+    .string()
+    .default('0')
     .transform((val) => parseInt(val, 10)),
 });
 

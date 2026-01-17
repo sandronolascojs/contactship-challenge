@@ -1,7 +1,5 @@
-import { Currency } from '@contactship/types';
-
 export interface FormatMoneyOptions {
-  currency?: Currency;
+  currency?: string;
   locale?: string;
   minimumFractionDigits?: number;
   maximumFractionDigits?: number;
@@ -10,14 +8,15 @@ export interface FormatMoneyOptions {
 export function formatMoneyFromCents(
   amountInCents: number,
   {
-    currency = Currency.USD,
+    currency = 'USD',
     locale,
     minimumFractionDigits,
     maximumFractionDigits,
   }: FormatMoneyOptions = {},
 ): string {
   const amount = amountInCents / 100;
-  return new Intl.NumberFormat(locale, {
+
+  return new Intl.NumberFormat(locale ?? undefined, {
     style: 'currency',
     currency,
     minimumFractionDigits,

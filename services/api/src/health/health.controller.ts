@@ -1,5 +1,10 @@
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import {
+  HealthCheck,
+  HealthCheckResult,
+  HealthCheckService,
+  HealthIndicatorResult,
+} from '@nestjs/terminus';
 import { DatabaseHealthIndicator } from './database-health-indicator';
 
 @Controller('health')
@@ -11,19 +16,25 @@ export class HealthController {
 
   @Get()
   @HealthCheck()
-  async check() {
-    return this.health.check([async () => this.database.isHealthy('database')]);
+  async check(): Promise<HealthCheckResult> {
+    const databaseCheck = async (): Promise<HealthIndicatorResult> => {
+      return this.database.isHealthy('database');
+    };
+    return this.health.check([databaseCheck]);
   }
 
   @Get('readiness')
   @HealthCheck()
-  async readiness() {
-    return this.health.check([async () => this.database.isHealthy('database')]);
+  async readiness(): Promise<HealthCheckResult> {
+    const databaseCheck = async (): Promise<HealthIndicatorResult> => {
+      return this.database.isHealthy('database');
+    };
+    return this.health.check([databaseCheck]);
   }
 
   @Get('liveness')
   @HealthCheck()
-  async liveness() {
+  async liveness(): Promise<HealthCheckResult> {
     return this.health.check([]);
   }
 }
