@@ -10,7 +10,7 @@ import {
   type SelectSyncJobLead,
 } from '../schema';
 
-const SYNC_JOB_LEADS_COUNT = 200;
+const SYNC_JOB_LEADS_COUNT = 10;
 
 interface PostgresError extends Error {
   code?: string;

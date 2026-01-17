@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { getDb } from '../index';
 import { leads, persons, type SelectLead, type SelectPerson } from '../schema';
 
-const LEADS_COUNT = 100;
+const LEADS_COUNT = 10;
 
 export const seedLeads = async () => {
   console.log('🌱 Seeding leads...');

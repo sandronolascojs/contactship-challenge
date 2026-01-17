@@ -10,7 +10,6 @@ export const persons = pgTable(
     id: idField('person_id'),
     firstName: varchar('first_name', { length: 255 }).notNull(),
     lastName: varchar('last_name', { length: 255 }).notNull(),
-    fullName: text('full_name').notNull(),
     phone: varchar('phone', { length: 50 }),
     address: jsonb('address').$type<{
       street: string;
@@ -26,10 +25,7 @@ export const persons = pgTable(
     createdAt: timestampWithTimezone('created_at').notNull().defaultNow(),
     updatedAt: timestampWithTimezone('updated_at').notNull().defaultNow(),
   },
-  (table) => [
-    index('idx_persons_full_name').on(table.fullName),
-    index('idx_persons_phone').on(table.phone),
-  ],
+  (table) => [index('idx_persons_phone').on(table.phone)],
 );
 
 export const personsRelations = relations(persons, ({ many }) => ({

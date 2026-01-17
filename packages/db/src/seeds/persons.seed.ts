@@ -3,7 +3,7 @@ import { faker } from '@faker-js/faker';
 import { getDb } from '../index';
 import { persons, type SelectPerson } from '../schema';
 
-const PERSONS_COUNT = 50;
+const PERSONS_COUNT = 10;
 
 export const seedPersons = async () => {
   console.log('🌱 Seeding persons...');
@@ -26,7 +26,6 @@ export const seedPersons = async () => {
       await db.insert(persons).values({
         firstName,
         lastName,
-        fullName: `${firstName} ${lastName}`,
         phone: faker.phone.number({ style: 'national' }),
         address: {
           street: faker.location.streetAddress(),
