@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import type { DB } from '@contactship/db';
-import { persons, SelectPerson, InsertPerson, UpdatePerson } from '@contactship/db/schema';
+import { InsertPerson, persons, SelectPerson, UpdatePerson } from '@contactship/db/schema';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
 
 @Injectable()
@@ -13,13 +13,9 @@ export class PersonsRepository {
   }
 
   async findOneById(id: string): Promise<SelectPerson> {
-    const [person] = await this.db
-      .select()
-      .from(persons)
-      .where(eq(persons.id, id))
-      .limit(1);
+    const [person] = await this.db.select().from(persons).where(eq(persons.id, id)).limit(1);
 
-    if (!person) {
+    if (person === undefined) {
       throw new NotFoundException(`Person with id ${id} not found`);
     }
 
@@ -33,7 +29,7 @@ export class PersonsRepository {
       .where(eq(persons.id, id))
       .returning();
 
-    if (!person) {
+    if (person === undefined) {
       throw new NotFoundException(`Person with id ${id} not found`);
     }
 
