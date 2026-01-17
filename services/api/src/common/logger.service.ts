@@ -1,5 +1,5 @@
+import { LogContext, Logger, LogLevel } from '@contactship/telemetry';
 import { Injectable } from '@nestjs/common';
-import { Logger, LogContext } from '@contactship/telemetry';
 
 @Injectable()
 export class AppLoggerService {
@@ -8,7 +8,7 @@ export class AppLoggerService {
   constructor() {
     this.logger = new Logger({
       serviceName: process.env.SERVICE_NAME || 'api',
-      level: (process.env.LOG_LEVEL || 'info') as any,
+      level: (process.env.LOG_LEVEL || 'info') as LogLevel,
       redactFields: ['password', 'token', 'secret', 'apiKey'],
       logToFile: process.env.NODE_ENV === 'production',
       logFilePath: 'logs/app.log',

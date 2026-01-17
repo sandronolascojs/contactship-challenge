@@ -1,7 +1,7 @@
 import {
-  ExceptionFilter,
-  Catch,
   ArgumentsHost,
+  Catch,
+  ExceptionFilter,
   HttpException,
   HttpStatus,
   Logger,
@@ -18,25 +18,28 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const status =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
+      exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
 
     const message =
-      exception instanceof HttpException
-        ? exception.getResponse()
-        : 'Internal server error';
+      exception instanceof HttpException ? exception.getResponse() : 'Internal server error';
 
-    const errorResponse = {
-      statusCode: status,
-      timestamp: new Date().toISOString(),
+    const errorMessage =
+      typeof message === 'string'
+        ? message
+        : (message as Record<string, unknown>)?.message || 'Error';
+
+    const errorData = {
+      message: errorMessage,
       path: request.url,
       method: request.method,
-      message:
-        typeof message === 'string'
-          ? message
-          : (message as Record<string, unknown>)?.message || 'Error',
       ...(status >= 500 && { error: 'Internal Server Error' }),
+    };
+
+    const errorResponse = {
+      success: false,
+      statusCode: status,
+      data: errorData,
+      timestamp: new Date().toISOString(),
     };
 
     if (status >= 500) {
@@ -46,7 +49,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       );
     } else if (status >= 400) {
       this.logger.warn(
-        `${request.method} ${request.url} - Status: ${status} - ${JSON.stringify(errorResponse.message)}`,
+        `${request.method} ${request.url} - Status: ${status} - ${JSON.stringify(errorMessage)}`,
       );
     }
 
