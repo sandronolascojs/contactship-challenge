@@ -17,6 +17,7 @@ Microservicio para gestión de leads con integración de IA, sincronización des
 | API Documentation | Swagger/OpenAPI       | 11.2+   |
 | Rate Limiting     | @nestjs/throttler     | 6.5+    |
 | Security          | Helmet                | 8.1+    |
+| Error Tracking    | Sentry                | 10.34+  |
 | Orchestration     | pnpm workspaces       | -       |
 | Scheduler         | @nestjs/schedule      | 6.x     |
 
@@ -890,6 +891,49 @@ Based on the lead information above, generate:
 
 Ensure your response is valid JSON matching the required schema.
 ```
+
+### Monitoreo y Error Tracking
+
+#### Sentry
+
+La aplicación está integrada con Sentry para monitoreo de errores y performance tracking.
+
+**Configuración:**
+
+- **DSN:** Configurado en `src/instrument.ts`
+- **Environment:** Basado en `NODE_ENV`
+- **Performance Monitoring:** Habilitado con sampling rate configurable
+- **Profiling:** Habilitado para análisis de performance
+- **PII Data:** Habilitado (`sendDefaultPii: true`)
+
+**Características:**
+
+- Captura automática de todas las excepciones no manejadas
+- Tracking de performance y transacciones
+- Profiling de código para identificar cuellos de botella
+- Contexto automático de requests (URL, método, headers)
+- Agrupación inteligente de errores similares
+
+**Inicialización:**
+
+Sentry se inicializa antes que cualquier otro código en `src/instrument.ts`, que se importa al inicio de `main.ts`.
+
+**Filtros Globales:**
+
+- `SentryGlobalFilter`: Captura automáticamente todas las excepciones antes de que lleguen a otros filtros
+- Integrado con `HttpExceptionFilter` para mantener el formato de respuesta consistente
+
+**Variables de Entorno (Opcionales):**
+
+```env
+APP_VERSION=1.0.0  # Release version para Sentry
+NODE_ENV=production  # Environment (development/production)
+```
+
+**Sampling Rates:**
+
+- **Development:** 100% de traces y profiles
+- **Production:** 10% de traces y profiles (configurable)
 
 ### Seguridad
 
