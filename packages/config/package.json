@@ -7,7 +7,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "format": "prettier --config ./.prettierrc --write ."
+    "format": "prettier --config ./.prettierrc --write \"$@\""
   },
   "dependencies": {
     "@eslint/js": "catalog:",
