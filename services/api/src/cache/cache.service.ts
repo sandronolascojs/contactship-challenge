@@ -1,5 +1,5 @@
 import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { HttpException, Inject, Injectable, Logger } from '@nestjs/common';
 
 type CacheWithStore = Cache & {
   getStore?: () => {
@@ -23,23 +23,40 @@ export class CacheService {
   }
 
   async getOrSet<T>(key: string, factory: () => Promise<T>, ttl?: number): Promise<T> {
+    let cached: T | undefined;
+
     try {
-      const cached = await this.cacheManager.get<T>(key);
+      cached = await this.cacheManager.get<T>(key);
+    } catch (error) {
+      this.logger.warn(`Cache get error for key ${key}, proceeding with factory:`, error);
+    }
 
-      if (cached !== undefined) {
-        this.logger.debug(`Cache hit for key: ${key}`);
-        return cached;
-      }
+    if (cached !== undefined) {
+      this.logger.debug(`Cache hit for key: ${key}`);
+      return cached;
+    }
 
-      this.logger.debug(`Cache miss for key: ${key}, fetching data...`);
+    this.logger.debug(`Cache miss for key: ${key}, fetching data...`);
+
+    try {
       const value = await factory();
 
-      await this.cacheManager.set(key, value, ttl);
+      try {
+        await this.cacheManager.set(key, value, ttl);
+      } catch (error) {
+        this.logger.warn(
+          `Cache set error for key ${key}, but value was fetched successfully:`,
+          error,
+        );
+      }
 
       return value;
     } catch (error) {
-      this.logger.error(`Error in getOrSet for key ${key}:`, error);
-      return factory();
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      this.logger.error(`Error in factory for key ${key}:`, error);
+      throw error;
     }
   }
 
