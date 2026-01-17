@@ -1,0 +1,68 @@
+{
+  "name": "@contactship/ai",
+  "version": "1.0.0",
+  "description": "AI agents for Contactship using Mastra",
+  "license": "ISC",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./mastra": {
+      "import": "./dist/mastra/index.js",
+      "require": "./dist/mastra/index.js",
+      "types": "./dist/mastra/index.d.ts"
+    },
+    "./agents": {
+      "import": "./dist/mastra/agents/index.js",
+      "require": "./dist/mastra/agents/index.js",
+      "types": "./dist/mastra/agents/index.d.ts"
+    },
+    "./scorers": {
+      "import": "./dist/mastra/scorers/index.js",
+      "require": "./dist/mastra/scorers/index.js",
+      "types": "./dist/mastra/scorers/index.d.ts"
+    }
+  },
+  "main": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "del dist tsconfig.tsbuildinfo",
+    "compile": "tsc --noEmit",
+    "format": "prettier --config ../config/.prettierrc --ignore-path ../../.prettierignore --write . && prettier-package-json --write ./package.json",
+    "lint": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --ext .ts,.tsx",
+    "lint:fix": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --fix --ext .ts,.tsx",
+    "mastra:build": "NODE_OPTIONS='--import tsx' dotenv -e .env.local -- mastra build",
+    "mastra:dev": "NODE_OPTIONS='--import tsx' dotenv -e .env.local -- mastra dev",
+    "typecheck": "tsc --noEmit"
+  },
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@contactship/types": "workspace:*",
+    "@mastra/evals": "catalog:"
+  },
+  "peerDependencies": {
+    "@ai-sdk/openai": "catalog:",
+    "@mastra/core": "catalog:",
+    "@mastra/loggers": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "del-cli": "catalog:",
+    "dotenv-cli": "catalog:",
+    "eslint": "catalog:",
+    "mastra": "catalog:",
+    "prettier": "catalog:",
+    "prettier-package-json": "catalog:",
+    "prettier-plugin-organize-imports": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "keywords": [],
+  "packageManager": "pnpm@10.11.0"
+}
