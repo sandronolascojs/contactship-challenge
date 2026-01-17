@@ -17,6 +17,10 @@ import { QueuesModule } from './queues';
 import { SchedulerModule } from './scheduler';
 import { SyncModule } from './sync';
 
+// Only import Sentry modules if DSN is configured
+// This prevents unnecessary initialization and potential issues
+const isSentryEnabled = !!process.env.SENTRY_DSN;
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,7 +28,8 @@ import { SyncModule } from './sync';
       envFilePath: ['.env.local', '.env'],
       load: [loadEnv],
     }),
-    SentryModule.forRoot(),
+    // Conditionally import SentryModule only if DSN is configured
+    ...(isSentryEnabled ? [SentryModule.forRoot()] : []),
     SecurityModule,
     DatabaseModule,
     LeadsModule,
@@ -40,10 +45,15 @@ import { SyncModule } from './sync';
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_FILTER,
-      useClass: SentryGlobalFilter,
-    },
+    // Conditionally add SentryGlobalFilter only if Sentry is enabled
+    ...(isSentryEnabled
+      ? [
+          {
+            provide: APP_FILTER,
+            useClass: SentryGlobalFilter,
+          },
+        ]
+      : []),
   ],
 })
 export class AppModule {}

@@ -180,6 +180,11 @@ SYNC_CRON=0 * * * *
 
 # AI (OpenAI)
 OPENAI_API_KEY=sk-tu-api-key-aqui
+
+# Error Tracking (Sentry) - Opcional
+# Si no se configura, Sentry estará deshabilitado (no se enviarán errores)
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+APP_VERSION=1.0.0
 ```
 
 ### Paso 5: Iniciar Infraestructura con Docker
@@ -286,6 +291,54 @@ El servidor estará disponible en: **`http://localhost:3000`**
 
 3. **Acceder a la documentación Swagger:**
    - Abre en tu navegador: `http://localhost:3000/api/docs`
+
+## Monitoreo y Error Tracking
+
+### Sentry
+
+La aplicación está integrada con **Sentry** para monitoreo de errores y performance tracking.
+
+#### Configuración
+
+Sentry está configurado de forma **opcional** mediante la variable de entorno `SENTRY_DSN`:
+
+- **Si `SENTRY_DSN` está configurada:** Sentry se inicializa y captura errores automáticamente
+- **Si `SENTRY_DSN` NO está configurada:** Sentry está deshabilitado, no se enviarán errores (protección contra envíos infinitos)
+
+#### Variables de Entorno
+
+```env
+# Error Tracking (Sentry) - Opcional
+SENTRY_DSN=https://your-sentry-dsn@sentry.io/project-id
+APP_VERSION=1.0.0  # Versión de release para Sentry
+```
+
+#### Obtener tu DSN de Sentry
+
+1. Crea una cuenta en [Sentry](https://sentry.io)
+2. Crea un nuevo proyecto (selecciona NestJS como plataforma)
+3. Copia el **DSN** que se te proporciona
+4. Configúralo en tu archivo `.env` como `SENTRY_DSN`
+
+#### Características
+
+- ✅ **Captura automática** de todas las excepciones no manejadas
+- ✅ **Performance monitoring** con sampling rate configurable
+- ✅ **Profiling** de código para identificar cuellos de botella
+- ✅ **Contexto automático** de requests (URL, método, headers)
+- ✅ **Agrupación inteligente** de errores similares
+- ✅ **Protección contra envíos infinitos** (solo funciona si DSN está configurado)
+
+#### Sampling Rates
+
+- **Development:** 100% de traces y profiles
+- **Production:** 10% de traces y profiles (configurable)
+
+#### Inicialización
+
+Sentry se inicializa en `services/api/src/instrument.ts` antes que cualquier otro código, y se importa al inicio de `main.ts`.
+
+**Importante:** Si `SENTRY_DSN` no está configurada, Sentry no se inicializa y no se enviarán errores, evitando problemas de envíos infinitos.
 
 ## Guía Rápida de Inicio
 
@@ -530,6 +583,19 @@ PORT=3001
 # O detener el proceso que usa el puerto 3000
 lsof -ti:3000 | xargs kill -9
 ```
+
+### Sentry no está capturando errores
+
+**Solución:**
+
+1. Verifica que `SENTRY_DSN` esté configurada en tu archivo `.env`
+2. Asegúrate de que el DSN sea válido y tenga el formato correcto: `https://xxx@xxx.ingest.sentry.io/xxx`
+3. Verifica que el proyecto de Sentry esté activo
+4. Revisa los logs de la aplicación al iniciar:
+   - Si ves un warning sobre Sentry DSN no configurado, significa que Sentry está deshabilitado (esto es normal si no quieres usar Sentry)
+   - Si no ves el warning pero tampoco captura errores, verifica que el DSN sea correcto
+
+**Nota:** Si `SENTRY_DSN` no está configurada, Sentry está deshabilitado intencionalmente para evitar envíos infinitos. Esto es el comportamiento esperado.
 
 ## Criterios de Evaluación Cumplidos
 

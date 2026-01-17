@@ -30,6 +30,8 @@ const envSchema = z.object({
     .string()
     .default('0')
     .transform((val) => parseInt(val, 10)),
+  SENTRY_DSN: z.string().url().optional(),
+  APP_VERSION: z.string().optional(),
 });
 
 type EnvSchema = z.infer<typeof envSchema>;
