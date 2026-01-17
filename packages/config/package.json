@@ -24,9 +24,6 @@
     "prettier": "catalog:",
     "prettier-package-json": "catalog:",
     "prettier-plugin-organize-imports": "catalog:",
-    "tailwind-merge": "catalog:",
-    "tailwindcss": "catalog:",
-    "tw-animate-css": "catalog:",
     "typescript": "catalog:"
   },
   "devDependencies": {
