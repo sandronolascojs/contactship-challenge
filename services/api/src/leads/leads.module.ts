@@ -1,5 +1,6 @@
 import type { DB } from '@contactship/db';
 import { Module } from '@nestjs/common';
+import { AiModule } from '../ai';
 import { DatabaseModule, DRIZZLE_PROVIDER } from '../database';
 import { PersonsModule } from '../persons';
 import { LeadsController } from './leads.controller';
@@ -7,7 +8,7 @@ import { LeadsService } from './leads.service';
 import { LeadsRepository } from './repository';
 
 @Module({
-  imports: [DatabaseModule, PersonsModule],
+  imports: [DatabaseModule, PersonsModule, AiModule],
   controllers: [LeadsController],
   providers: [
     LeadsService,
