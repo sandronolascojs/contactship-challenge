@@ -83,7 +83,8 @@ Microservicio para gestión de leads con integración de IA, sincronización des
 
 - Node.js 18+
 - pnpm 10+
-- Docker (para Redis y PostgreSQL)
+- Docker (para Redis)
+- Cuenta de Supabase con proyecto creado
 - OpenAI API Key
 
 ### Configuración
@@ -110,8 +111,8 @@ nano .env
 PORT=3000
 NODE_ENV=development
 
-# Database
-DATABASE_URL=postgresql://postgres:password@localhost:5432/contactship
+# Database (Supabase)
+DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
 
 # Authentication
 JWT_SECRET=change-this-secret-in-production
@@ -140,9 +141,11 @@ OPENAI_API_KEY=sk-...
 ### Iniciar infraestructura
 
 ```bash
-# Iniciar Redis y PostgreSQL con Docker
-docker-compose up -d
+# Iniciar Redis con Docker (PostgreSQL se usa desde Supabase)
+docker-compose up -d redis
 ```
+
+**Nota:** La base de datos PostgreSQL se gestiona a través de Supabase. Obtén la URL de conexión desde el panel de Supabase en la sección "Database" > "Connection string".
 
 ### Migraciones
 
@@ -1044,6 +1047,8 @@ pnpm format                  # Prettier
 
 ### docker-compose.yml
 
+**Nota:** PostgreSQL se gestiona a través de Supabase. Solo se requiere Docker para Redis.
+
 ```yaml
 services:
   redis:
@@ -1053,28 +1058,25 @@ services:
     volumes:
       - redis_data:/data
 
-  postgres:
-    image: postgres:15
-    ports:
-      - '5432:5432'
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: contactship
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
 volumes:
   redis_data:
-  postgres_data:
 ```
 
 ### Ejecutar
 
 ```bash
-docker-compose up -d
-docker-compose logs -f
+# Iniciar solo Redis (PostgreSQL se usa desde Supabase)
+docker-compose up -d redis
+docker-compose logs -f redis
 ```
+
+### Configuración de Supabase
+
+1. Crea un proyecto en [Supabase](https://supabase.com)
+2. Ve a **Settings** > **Database**
+3. Copia la **Connection string** (formato: `postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres`)
+4. Agrega `?sslmode=require` al final de la URL
+5. Configura la variable `DATABASE_URL` en tu archivo `.env`
 
 ## Testing
 
@@ -1127,7 +1129,7 @@ describe('LeadsService', () => {
 NODE_ENV=production
 PORT=3000
 
-DATABASE_URL=postgresql://user:password@host:5432/db
+DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
 JWT_SECRET=<secure-random-256-bit-key>
 JWT_EXPIRES_IN=1h
 
@@ -1210,6 +1212,22 @@ contactship-challenge/
 ```bash
 docker-compose ps
 docker-compose logs redis
+```
+
+### Error: Cannot connect to Database (Supabase)
+
+**Solución:** Verificar la configuración de Supabase
+
+1. Verifica que la URL de conexión esté correctamente configurada en `DATABASE_URL`
+2. Asegúrate de que la URL incluya `?sslmode=require` al final
+3. Verifica que el proyecto de Supabase esté activo en el panel de Supabase
+4. Revisa que la contraseña de la base de datos sea correcta
+5. Verifica que la región en la URL coincida con tu proyecto
+
+**Formato correcto de DATABASE_URL:**
+
+```
+postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres?sslmode=require
 ```
 
 ### Error: JWT Expired
