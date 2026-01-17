@@ -1,0 +1,46 @@
+{
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "format": "pnpm -r --if-present run format",
+    "lint": "pnpm -r --if-present run lint",
+    "lint:fix": "pnpm -r --if-present run lint:fix",
+    "prepare": "husky install",
+    "sync-peer-deps": "node scripts/sync-peer-deps.js",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "watch": "turbo watch dev"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "services/*"
+  ],
+  "dependencies": {
+    "turbo": "^2.7.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
+    "@eslint/eslintrc": "^3.3.3",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^9.39.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.0",
+    "typescript": "^5.9.3"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx,jsx}": [
+      "eslint --fix",
+      "pnpm -r --if-present run format"
+    ],
+    "*.{json,css,md,yaml,yml}": [
+      "pnpm -r --if-present run format"
+    ],
+    "*.{ts,tsx}": [
+      "pnpm -r --if-present run typecheck"
+    ]
+  },
+  "packageManager": "pnpm@10.11.0"
+}

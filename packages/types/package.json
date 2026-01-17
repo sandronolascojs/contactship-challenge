@@ -1,0 +1,52 @@
+{
+  "name": "@contactship/types",
+  "version": "1.0.0",
+  "description": "Types for the Calm Pulse project",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "clean": "del-cli dist tsconfig.tsbuildinfo",
+    "compile": "tsc --noEmit",
+    "coverage": "vitest run --coverage",
+    "format": "prettier --config ../config/.prettierrc --ignore-path ../../.prettierignore --write . && prettier-package-json --write ./package.json",
+    "lint": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --ext .ts,.tsx",
+    "lint:fix": "eslint src --flag v10_config_lookup_from_file --max-warnings 0 --fix --ext .ts,.tsx",
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@contactship/config": "workspace:*",
+    "tsx": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@eslint/js": "catalog:",
+    "@typescript-eslint/eslint-plugin": "catalog:",
+    "@typescript-eslint/parser": "catalog:",
+    "@vercel/style-guide": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-next": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "eslint-plugin-only-warn": "catalog:",
+    "eslint-plugin-react": "catalog:",
+    "eslint-plugin-react-hooks": "catalog:",
+    "eslint-plugin-unused-imports": "catalog:",
+    "prettier": "catalog:",
+    "prettier-package-json": "catalog:",
+    "prettier-plugin-organize-imports": "catalog:",
+    "typescript": "catalog:",
+    "typescript-eslint": "catalog:"
+  }
+}

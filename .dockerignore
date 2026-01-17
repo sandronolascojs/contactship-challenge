@@ -1,0 +1,58 @@
+# Git
+.git
+.gitignore
+.github
+
+# Dependencies (installed in container)
+node_modules
+
+# Tests
+test
+*.test.ts
+*.spec.ts
+coverage
+.nyc_output
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Documentation
+*.md
+!packages/*/README.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*.local
+
+# Build outputs
+dist
+build
+.next
+out
+.turbo
+
+# Services (exclude other services for api build)
+apps
+services/web
+services/mobile
+
+# Misc
+.husky
+scripts
+sst.config.ts

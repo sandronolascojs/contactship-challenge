@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "outDir": "dist",
+    "lib": [
+      "ES2021"
+    ],
+    "sourceMap": true,
+    "types": [
+      "node"
+    ]
+  },
+  "display": "backend service",
+  "extends": "./base.json"
+}

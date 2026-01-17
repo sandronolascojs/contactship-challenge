@@ -1,0 +1,8 @@
+**/.sst/**
+**/eslint.config.js
+
+# Ignore all JSON files
+**/*.json
+
+# But include package.json files
+!**/package.json 
