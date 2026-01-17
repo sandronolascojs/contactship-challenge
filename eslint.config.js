@@ -14,6 +14,8 @@ export default tseslint.config(
       '**/eslint.config.js',
       '**/eslint.config.mjs',
       '**/packages/config/**',
+      '**/tsup.config.ts',
+      '**/tsup.config.d.ts',
     ],
   },
   js.configs.recommended,

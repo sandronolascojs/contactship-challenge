@@ -3,8 +3,6 @@
   "version": "1.0.0",
   "description": "Types for the Calm Pulse project",
   "license": "MIT",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/index.js",
@@ -12,6 +10,7 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "main": "./dist/index.js",
   "files": [
     "dist"
   ],
@@ -26,6 +25,7 @@
     "test": "vitest",
     "typecheck": "tsc --noEmit"
   },
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "@contactship/config": "workspace:*",
     "tsx": "catalog:",

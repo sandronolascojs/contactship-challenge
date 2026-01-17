@@ -14,6 +14,9 @@ Microservicio para gestión de leads con integración de IA, sincronización des
 | Job Queue         | BullMQ                | 5.66+   |
 | Authentication    | JWT (Passport)        | -       |
 | AI/ML             | Mastra AI + OpenAI    | -       |
+| API Documentation | Swagger/OpenAPI       | 11.2+   |
+| Rate Limiting     | @nestjs/throttler     | 6.5+    |
+| Security          | Helmet                | 8.1+    |
 | Orchestration     | pnpm workspaces       | -       |
 | Scheduler         | @nestjs/schedule      | 6.x     |
 
@@ -156,6 +159,55 @@ pnpm dev
 
 El API estará disponible en `http://localhost:3000`
 
+## Documentación de la API (Swagger)
+
+La API incluye documentación interactiva generada automáticamente con Swagger/OpenAPI.
+
+### Acceso a la Documentación
+
+**URL:** `http://localhost:3000/api/docs`
+
+Una vez que el servidor esté corriendo, puedes acceder a la documentación interactiva en tu navegador.
+
+### Características
+
+- **Documentación Interactiva:** Prueba todos los endpoints directamente desde el navegador
+- **Autenticación JWT:** Incluye soporte para autenticación Bearer Token
+- **Esquemas de Validación:** Todos los DTOs están documentados con sus validaciones
+- **Ejemplos de Request/Response:** Cada endpoint incluye ejemplos de uso
+- **Tags Organizados:** Endpoints agrupados por funcionalidad (auth, leads, sync, health)
+
+### Uso de la Autenticación en Swagger
+
+1. Accede a `http://localhost:3000/api/docs`
+2. Haz clic en el botón **"Authorize"** (🔒) en la parte superior derecha
+3. Ingresa tu token JWT en el campo `Value` con el formato: `Bearer <tu-token>`
+4. Haz clic en **"Authorize"** y luego en **"Close"**
+5. Ahora todos los endpoints protegidos estarán autenticados automáticamente
+
+**Nota:** El token se persiste durante la sesión del navegador gracias a la opción `persistAuthorization: true`.
+
+### Estructura de la Documentación
+
+La documentación está organizada en los siguientes tags:
+
+- **auth:** Endpoints de autenticación (login)
+- **leads:** Operaciones CRUD de leads y generación de resúmenes con IA
+- **sync:** Sincronización con APIs externas y gestión de jobs
+- **health:** Health checks y monitoreo
+
+### Exportar Especificación OpenAPI
+
+Puedes exportar la especificación OpenAPI en formato JSON desde:
+
+- `http://localhost:3000/api/docs-json`
+
+Esto es útil para:
+
+- Generar clientes SDK automáticamente
+- Importar en herramientas como Postman
+- Integrar con otras herramientas de documentación
+
 ## API Endpoints
 
 ### Autenticación
@@ -168,18 +220,18 @@ El API estará disponible en `http://localhost:3000`
 
 **Request Body:**
 
-```typescript
+```json
 {
-  email: string;
-  password: string;
+  "email": "admin@contactship.com",
+  "password": "admin123"
 }
 ```
 
 **Respuesta:**
 
-```typescript
+```json
 {
-  access_token: string;
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhZG1pbkBjb250YWN0c2hpcC5jb20iLCJlbWFpbCI6ImFkbWluQGNvbnRhY3RzaGlwLmNvbSIsImlhdCI6MTYxNjIzOTAyMiwiZXhwIjoxNjE2MjQyNjIyfQ..."
 }
 ```
 
@@ -331,7 +383,7 @@ curl -X GET "http://localhost:3000/leads?page=1&take=10&status=new" \
 **Path Params:**
 | Param | Tipo | Descripción |
 |-------|-------|-------------|
-| id | string | UUID del lead |
+| id | string | ID del lead (cuid) |
 
 **Respuesta:** Lead con relaciones
 
@@ -355,7 +407,7 @@ curl -X GET http://localhost:3000/leads/{leadId} \
 **Path Params:**
 | Param | Tipo | Descripción |
 |-------|-------|-------------|
-| id | string | UUID del lead |
+| id | string | ID del lead (cuid) |
 
 **AI Model:** GPT-4o-mini (configurable)
 
@@ -405,7 +457,7 @@ curl -X POST http://localhost:3000/leads/{leadId}/summarize \
 **Path Params:**
 | Param | Tipo | Descripción |
 |-------|-------|-------------|
-| id | string | UUID del lead |
+| id | string | ID del lead (cuid) |
 
 **Request Body:** Parcial de CreateLeadDto
 
@@ -433,7 +485,7 @@ curl -X PATCH http://localhost:3000/leads/{leadId} \
 **Path Params:**
 | Param | Tipo | Descripción |
 |-------|-------|-------------|
-| id | string | UUID del lead |
+| id | string | ID del lead (cuid) |
 
 **Status Code:** 204 No Content
 
@@ -546,7 +598,7 @@ curl -X GET "http://localhost:3000/sync/jobs?limit=10" \
 **Path Params:**
 | Param | Tipo | Descripción |
 |-------|-------|-------------|
-| id | string | UUID del sync job |
+| id | string | ID del sync job (cuid) |
 
 **Ejemplo:**
 
@@ -879,95 +931,42 @@ curl -X GET http://localhost:3000/leads \
 
 - **TTL:** 60 segundos
 - **Max Requests:** 100 por ventana
+- **Implementación:** `@nestjs/throttler` con almacenamiento en memoria
 
-## Modelo de Datos
+#### CORS
 
-### Leads Table
+- **Configuración:** Habilitado con configuración personalizable
+- **Orígenes:** Configurables via `SecurityConfigService`
+- **Credenciales:** Soporte para cookies y headers de autenticación
 
-```sql
-CREATE TABLE leads (
-  id UUID PRIMARY KEY,
-  person_id UUID REFERENCES persons(id) ON DELETE CASCADE,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  external_id VARCHAR(255),
-  source VARCHAR(20) NOT NULL DEFAULT 'manual',
-  status VARCHAR(20) NOT NULL DEFAULT 'new',
-  metadata JSONB,
-  synced_at TIMESTAMP,
-  summary TEXT,
-  next_action TEXT,
-  summary_generated_at TIMESTAMP,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
+#### Helmet
+
+- **Seguridad HTTP:** Headers de seguridad configurados automáticamente
+- **XSS Protection:** Protección contra ataques XSS
+- **Content Security Policy:** CSP configurado
+- **HSTS:** HTTP Strict Transport Security habilitado
+
+### Modelo de Datos
+
+Los schemas de la base de datos están definidos en el paquete `@contactship/db` usando Drizzle ORM.
+
+**Ubicación:** `packages/db/src/schema/`
+
+**Schemas disponibles:**
+
+- `leads.schema.ts` - Tabla de leads
+- `persons.schema.ts` - Tabla de personas
+- `sync-jobs.schema.ts` - Tabla de jobs de sincronización
+- `sync-job-leads.schema.ts` - Tabla de relación entre jobs y leads
+
+**Uso:**
+
+```typescript
+import { leads, persons, syncJobs, syncJobLeads } from '@contactship/db/schema';
+import type { SelectLead, InsertLead, UpdateLead } from '@contactship/db/schema';
 ```
 
-**Indexes:**
-
-- `idx_leads_person_id` (person_id)
-- `idx_leads_email` (email)
-- `idx_leads_external_id` (external_id)
-- `idx_leads_source` (source)
-- `idx_leads_status` (status)
-
-### Persons Table
-
-```sql
-CREATE TABLE persons (
-  id UUID PRIMARY KEY,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NOT NULL,
-  phone VARCHAR(50),
-  address JSONB,
-  date_of_birth TIMESTAMP,
-  nationality VARCHAR(100),
-  gender VARCHAR(20),
-  picture_url TEXT,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
-
-**Indexes:**
-
-- `idx_persons_phone` (phone)
-
-### Sync Jobs Table
-
-```sql
-CREATE TABLE sync_jobs (
-  id UUID PRIMARY KEY,
-  status VARCHAR(20) NOT NULL DEFAULT 'pending',
-  records_processed INTEGER DEFAULT 0,
-  records_created INTEGER DEFAULT 0,
-  records_skipped INTEGER DEFAULT 0,
-  errors JSONB,
-  started_at TIMESTAMP,
-  completed_at TIMESTAMP,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
-
-**Indexes:**
-
-- `idx_sync_jobs_status` (status)
-- `idx_sync_jobs_created_at` (created_at)
-
-### Sync Job Leads Table
-
-```sql
-CREATE TABLE sync_job_leads (
-  sync_job_id UUID REFERENCES sync_jobs(id) ON DELETE CASCADE,
-  lead_id UUID REFERENCES leads(id) ON DELETE CASCADE,
-  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (sync_job_id, lead_id)
-);
-```
-
-**Indexes:**
-
-- `idx_sync_job_leads_sync_job_id` (sync_job_id)
-- `idx_sync_job_leads_lead_id` (lead_id)
+Para ver la estructura completa de las tablas, consulta los archivos de schema en `packages/db/src/schema/`.
 
 ## Scripts Disponibles
 
@@ -1110,7 +1109,8 @@ contactship-challenge/
 ├── packages/
 │   ├── ai/                   # Agentes de IA (Mastra)
 │   ├── db/                    # Schemas y utilidades de DB (Drizzle)
-│   ├── types/                 # Tipos TypeScript compartidos
+│   │   └── src/schema/        # Definiciones de tablas y relaciones
+│   ├── types/                 # Tipos TypeScript compartidos (incluye schemas Zod)
 │   ├── telemetry/             # Logging
 │   └── shared/                # Utilidades compartidas
 ├── services/
@@ -1120,15 +1120,17 @@ contactship-challenge/
 │       │   ├── ai/            # Integración de IA
 │       │   ├── cache/         # Cache Redis
 │       │   ├── common/         # DTOs, interfaces, utils
-│       │   ├── config/         # Configuración
+│       │   ├── config/         # Configuración (security, env, etc.)
 │       │   ├── database/       # Conexión DB
 │       │   ├── health/         # Health checks
-│       │   ├── integrations/   # APIs externas
+│       │   ├── integrations/   # APIs externas (RandomUser.me)
 │       │   ├── leads/          # Leads CRUD + AI
 │       │   ├── persons/        # Persons CRUD
-│       │   ├── queues/         # BullMQ jobs
+│       │   ├── queues/         # BullMQ jobs y processors
 │       │   ├── scheduler/      # CRON jobs
-│       │   └── sync/           # Sincronización
+│       │   ├── sync/           # Sincronización
+│       │   ├── lib/            # Instancias compartidas (Mastra)
+│       │   └── main.ts         # Bootstrap con Swagger
 │       └── package.json
 ├── .env.example
 ├── docker-compose.yml
@@ -1178,9 +1180,40 @@ docker-compose logs redis
 
 **Solución:** Configurar `OPENAI_API_KEY` en `.env`
 
+## Herramientas de Desarrollo
+
+### Swagger UI
+
+La documentación interactiva está disponible en desarrollo y producción (recomendado deshabilitar en producción o proteger con autenticación).
+
+**Desarrollo:**
+
+```bash
+# Acceder a Swagger
+open http://localhost:3000/api/docs
+```
+
+### Postman Collection
+
+Puedes importar la especificación OpenAPI en Postman:
+
+1. Abre Postman
+2. Click en **Import**
+3. Selecciona **Link** e ingresa: `http://localhost:3000/api/docs-json`
+4. O descarga el JSON desde la URL y arrástralo a Postman
+
+### Clientes Generados
+
+Puedes generar clientes SDK automáticamente usando herramientas como:
+
+- **openapi-generator:** https://openapi-generator.tech
+- **swagger-codegen:** https://swagger.io/tools/swagger-codegen/
+- **openapi-typescript-codegen:** https://github.com/ferdikoomen/openapi-typescript-codegen
+
 ## Soporte
 
 - **Documentación de NestJS:** https://docs.nestjs.com
+- **Swagger/OpenAPI:** https://swagger.io
 - **Drizzle ORM:** https://orm.drizzle.team
 - **BullMQ:** https://docs.bullmq.io
 - **Mastra AI:** https://mastra.ai

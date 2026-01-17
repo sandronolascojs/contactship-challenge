@@ -15,4 +15,7 @@ export const mastra = new Mastra({
     name: 'contactship-ai',
     level: 'info',
   }),
+  bundler: {
+    externals: ['@contactship/types'],
+  },
 });

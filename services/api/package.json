@@ -22,10 +22,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ai-sdk/openai": "catalog:",
     "@contactship/ai": "workspace:*",
     "@contactship/db": "workspace:*",
     "@contactship/telemetry": "workspace:*",
     "@contactship/types": "workspace:*",
+    "@mastra/core": "catalog:",
+    "@mastra/loggers": "catalog:",
     "@nestjs/bullmq": "^11.0.4",
     "@nestjs/cache-manager": "^3.1.0",
     "@nestjs/common": "^11.0.1",
@@ -36,6 +39,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/schedule": "^6.1.0",
+    "@nestjs/swagger": "^11.2.5",
     "@nestjs/terminus": "^11.0.0",
     "@nestjs/throttler": "^6.5.0",
     "@types/bcrypt": "^6.0.0",

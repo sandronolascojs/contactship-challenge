@@ -1,20 +1,7 @@
 import { openai } from '@ai-sdk/openai';
+import { LeadSummarySchema, type LeadSummary } from '@contactship/types';
 import { Agent } from '@mastra/core/agent';
-import { z } from 'zod';
 import { INTELLIGENCE_DEFAULT_MODEL } from '../../constants/ai.constants';
-
-const LeadSummarySchema = z.object({
-  summary: z
-    .string()
-    .describe(
-      'A concise summary of the lead profile highlighting key professional and personal characteristics',
-    ),
-  next_action: z
-    .string()
-    .describe('A specific, actionable next step for lead engagement and follow-up'),
-});
-
-export type LeadSummary = z.infer<typeof LeadSummarySchema>;
 
 export const contactshipAgent = new Agent({
   name: 'Contactship Lead Analyzer',
@@ -109,7 +96,7 @@ Based on the lead information above, generate:
 
 Ensure your response is valid JSON matching the required schema.`;
 
-  const result = await contactshipAgent.generate(prompt, {
+  const result = await contactshipAgent.streamLegacy(prompt, {
     output: LeadSummarySchema,
   });
 
