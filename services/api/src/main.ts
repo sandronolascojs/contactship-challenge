@@ -1,3 +1,8 @@
+// IMPORTANT: Make sure to import `instrument.ts` at the top of your file.
+// This initializes Sentry before everything else.
+import './instrument';
+
+// All other imports below
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

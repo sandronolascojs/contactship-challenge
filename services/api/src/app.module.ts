@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { APP_FILTER } from '@nestjs/core';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { AiModule } from './ai';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -22,6 +24,7 @@ import { SyncModule } from './sync';
       envFilePath: ['.env.local', '.env'],
       load: [loadEnv],
     }),
+    SentryModule.forRoot(),
     SecurityModule,
     DatabaseModule,
     LeadsModule,
@@ -35,6 +38,12 @@ import { SyncModule } from './sync';
     SchedulerModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: SentryGlobalFilter,
+    },
+  ],
 })
 export class AppModule {}
