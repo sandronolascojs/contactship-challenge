@@ -1,6 +1,7 @@
 import type { InsertLead, SelectLead } from '@contactship/db/schema';
-import { LeadStatus } from '@contactship/types';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { LeadSource, LeadStatus } from '@contactship/types';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { AiService } from '../ai';
 import { buildLeadKey, CacheService, DEFAULT_CACHE_TTL } from '../cache';
 import type { PaginatedResponse } from '../common/interfaces/response.interface';
 import { createPaginationMeta } from '../common/utils/pagination.utils';
@@ -14,6 +15,7 @@ export class LeadsService {
     private readonly leadsRepository: LeadsRepository,
     private readonly personsService: PersonsService,
     private readonly cacheService: CacheService,
+    private readonly aiService: AiService,
   ) {}
 
   async create(createLeadDto: CreateLeadDto): Promise<SelectLead> {
@@ -93,5 +95,44 @@ export class LeadsService {
       contacted,
       converted,
     };
+  }
+
+  async generateAndSaveSummary(leadId: string): Promise<SelectLead> {
+    const lead = await this.leadsRepository.findOneById(leadId);
+
+    if (!lead) {
+      throw new NotFoundException(`Lead with ID ${leadId} not found`);
+    }
+
+    const person = await this.personsService.findOneById(lead.personId);
+
+    if (!person) {
+      throw new NotFoundException(`Person with ID ${lead.personId} not found`);
+    }
+
+    const metadata = lead.metadata;
+
+    const leadSummary = await this.aiService.generateLeadSummary({
+      firstName: person.firstName,
+      lastName: person.lastName,
+      email: lead.email,
+      phone: person.phone ?? undefined,
+      location: person.address ? `${person.address.city}, ${person.address.country}` : undefined,
+      profession: metadata?.profession as string | undefined,
+      age: metadata?.age as number | undefined,
+      picture: person.pictureUrl ?? undefined,
+      source: lead.source === LeadSource.MANUAL ? 'manual' : 'randomuser',
+    });
+
+    const updatedLead = await this.leadsRepository.update(leadId, {
+      summary: leadSummary.summary,
+      nextAction: leadSummary.next_action,
+      summaryGeneratedAt: new Date(),
+    });
+
+    const cacheKey = buildLeadKey(leadId);
+    await this.cacheService.del(cacheKey);
+
+    return updatedLead;
   }
 }

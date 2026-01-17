@@ -10,17 +10,25 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth';
 import type { CreateLeadDto } from './dto';
 import { LeadsService } from './leads.service';
 import type { FindLeadsOptions } from './repository';
 
 @Controller('leads')
+@UseGuards(JwtAuthGuard)
 export class LeadsController {
   constructor(private readonly leadsService: LeadsService) {}
 
   @Post()
   async create(@Body() createLeadDto: CreateLeadDto) {
+    return this.leadsService.create(createLeadDto);
+  }
+
+  @Post('create-lead')
+  async createLead(@Body() createLeadDto: CreateLeadDto) {
     return this.leadsService.create(createLeadDto);
   }
 
@@ -53,6 +61,11 @@ export class LeadsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.leadsService.findOneById(id);
+  }
+
+  @Post(':id/summarize')
+  async generateSummary(@Param('id') id: string) {
+    return this.leadsService.generateAndSaveSummary(id);
   }
 
   @Patch(':id')
