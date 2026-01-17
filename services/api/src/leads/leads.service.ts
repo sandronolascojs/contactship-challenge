@@ -104,6 +104,12 @@ export class LeadsService {
       throw new NotFoundException(`Lead with ID ${leadId} not found`);
     }
 
+    if (lead.summary && lead.summaryGeneratedAt) {
+      throw new ConflictException(
+        `Lead with ID ${leadId} already has a summary generated at ${lead.summaryGeneratedAt.toISOString()}`,
+      );
+    }
+
     const person = await this.personsService.findOneById(lead.personId);
 
     if (!person) {

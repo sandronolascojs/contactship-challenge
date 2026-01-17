@@ -3,7 +3,9 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule, DRIZZLE_PROVIDER } from '../database';
+import { IntegrationsModule } from '../integrations';
 import { SyncJobsRepository } from '../sync/repository/sync-jobs.repository';
+import { QueueName } from './enums/queue-name.enum';
 import { SyncExternalLeadsProcessor } from './processors/sync-external-leads.processor';
 
 @Module({
@@ -20,7 +22,9 @@ import { SyncExternalLeadsProcessor } from './processors/sync-external-leads.pro
         },
       }),
     }),
+    BullModule.registerQueue({ name: QueueName.SYNC_EXTERNAL_LEADS }),
     DatabaseModule,
+    IntegrationsModule,
   ],
   providers: [
     {
